@@ -1,4 +1,4 @@
-repository "Instruments AR@wsinp431@cloud"
+repository "Instuments AR@wsinp431@cloud"
   path "/"
     br "/main"
     co "/main"

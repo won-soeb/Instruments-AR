@@ -1,19 +1,19 @@
 using UnityEngine;
 
-public class NotePlayer : MonoBehaviour
+public class NoteChecker : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Note") && other != null)
+        if (other.CompareTag("Note"))
         {
-            other.GetComponent<NoteManager>().PlayNote(true);
+            other.GetComponent<NoteManager>().CheckNote(true);
         }
     }
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Note"))
         {
-            other.GetComponent<NoteManager>().PlayNote(false);
+            other.GetComponent<NoteManager>().CheckNote(false);
         }
     }
 }

@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Block
+  - Drums
+  - Note
+  - NotePlayer
   layers:
   - Default
   - TransparentFX

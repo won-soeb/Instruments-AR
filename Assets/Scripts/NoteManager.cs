@@ -19,9 +19,9 @@ public class NoteManager : MonoBehaviour
         particle = GetComponent<ParticleSystem>();
         renderers = GetComponent<MeshRenderer>();
     }
+    //악기 종류에 따라 다른 로직
     public void CheckNote(bool check)
     {
-        //악기 종류에 따라 다른 로직
         if (type == InstrumentType.Bell)
         {
             anim.SetBool("IsFocusing", check);
@@ -31,25 +31,25 @@ public class NoteManager : MonoBehaviour
             if (check)
             {
                 renderers.material = materials[1];
+                particle.Play();
             }
             else
             {
                 renderers.material = materials[0];
+                particle.Stop();
             }
         }
     }
-    public void PlayeNote(bool note)
+    public void PlayNote(bool note)
     {
         if (note)
         {
-            if (audio.isPlaying) return;
+            //if (audio.isPlaying) return;
             audio.Play();
-            particle.Play();
         }
         else
         {
             audio.Stop();
-            particle.Stop();
         }
     }
 }

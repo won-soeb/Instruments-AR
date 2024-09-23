@@ -9,21 +9,26 @@ public class UIManager : MonoBehaviour
     //public LeanButton quitButton;
     public LeanButton changeButton;
     public Text instrumentName;
+    public LeanButton setButton;
+    public Text setText;
 
     //public GameObject cautionPanel;
 
     //public Action ChangeInstrument;
 
     public static int instNumber = 0;
+    public static bool isPlaying = false;
     private void Start()
     {
         //startButton.OnClick.AddListener(() => cautionPanel.SetActive(false));
         //quitButton.OnClick.AddListener(() => Application.Quit());
         changeButton.OnClick.AddListener(() =>
         {
+            if (!isPlaying) return;
+            //악기가 배치중이면 변경할 수 없음
             instNumber++;
             instNumber = (int)Mathf.Repeat(instNumber, 3);
-            
+
             switch (instNumber)
             {
                 case 0:
@@ -35,6 +40,18 @@ public class UIManager : MonoBehaviour
                 case 2:
                     instrumentName.text = "Bells";
                     break;
+            }
+        });
+        setButton.OnClick.AddListener(() =>
+        {
+            isPlaying = !isPlaying;
+            if (isPlaying)
+            {
+                setText.text = "배치";
+            }
+            else
+            {
+                setText.text = "재배치";
             }
         });
     }

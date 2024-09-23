@@ -27,31 +27,33 @@ public class PlaneManager : MonoBehaviour
     }
     private void Update()
     {
-        //UI측에서 isPlaying변수로 악기를 옮기지 못하게 제어할 것
-        DetectGround();
-
-        if (indicator.activeInHierarchy && Input.touchCount > 0)
+        //악기배치중일 경우 인식중지
+        if (!UIManager.isPlaying)
         {
-            Touch touch = Input.GetTouch(0);
-            Rotate(touch);
-            // 터치된 위치의 UI 요소를 검색
-            PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
-            pointerEventData.position = touch.position;
-            var results = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(pointerEventData, results);
+            indicator.SetActive(true);
+            return;
+        }
+        else
+        {
+            indicator.SetActive(false);
+            DetectGround();
 
-            if (results.Count > 0) 
+            if (indicator.activeInHierarchy && Input.touchCount > 0)
             {
-                // UI 요소에 터치됨
-                Debug.Log("Touched UI element.");
+                Touch touch = Input.GetTouch(0);
+                Rotate(touch);
+                // UI 요소가 터치된 경우, AR 화면 터치 처리 무시
+                if (IsPointerOverUI(touch.position))
+                {
+                    for (int i = 0; i < 3; i++)
+                    {
+                        instrumentList[i].SetActive(false);
+                    }
+                    instrumentList[UIManager.instNumber].SetActive(true);
+                    instrumentList[UIManager.instNumber].transform.
+                        SetPositionAndRotation(indicator.transform.position, indicator.transform.rotation);
+                }
             }
-            for (int i = 0; i < 3; i++)
-            {
-                instrumentList[i].SetActive(false);
-            }
-            instrumentList[UIManager.instNumber].SetActive(true);
-            instrumentList[UIManager.instNumber].transform.
-                SetPositionAndRotation(indicator.transform.position, indicator.transform.rotation);
         }
     }
     Vector2 screenSize;
@@ -79,5 +81,16 @@ public class PlaneManager : MonoBehaviour
             float rotationAmount = deltaPos.x * -0.1f;
             instrumentList[UIManager.instNumber].transform.Rotate(Vector3.up, rotationAmount);
         }
+    }
+    // UI가 터치된 상태인지 확인하는 메소드
+    private bool IsPointerOverUI(Vector2 touchPosition)
+    {
+        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+        pointerEventData.position = touchPosition;
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerEventData, results);
+
+        return results.Count > 0; // UI 요소가 터치된 경우 true 반환
     }
 }

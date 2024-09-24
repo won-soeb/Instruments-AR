@@ -4,16 +4,16 @@ public class NotePlayer : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Note") && other != null)
+        if (other.CompareTag("Note"))
         {
-            other.GetComponent<NoteManager>().PlayNote(true);
+            other.GetComponent<Instrument>().PlayNote(true);
         }
     }
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Note"))
         {
-            other.GetComponent<NoteManager>().PlayNote(false);
+            other.GetComponent<Instrument>().PlayNote(false);
         }
     }
 }

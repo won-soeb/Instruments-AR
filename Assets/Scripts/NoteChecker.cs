@@ -6,14 +6,14 @@ public class NoteChecker : MonoBehaviour
     {
         if (other.CompareTag("Note"))
         {
-            other.GetComponent<NoteManager>().CheckNote(true);
+            other.GetComponent<Instrument>().CheckNote(true);
         }
     }
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Note"))
         {
-            other.GetComponent<NoteManager>().CheckNote(false);
+            other.GetComponent<Instrument>().CheckNote(false);
         }
     }
 }

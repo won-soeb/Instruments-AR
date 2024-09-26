@@ -1,51 +1,46 @@
 using Lean.Gui;
-using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    public PlaneManager planeManager;
+    //Menu
     //public LeanButton startButton;
     //public LeanButton quitButton;
+    [Header("Main")]
     public LeanButton changeButton;
     public Text instrumentName;
     public LeanButton setButton;
     public Text setText;
+    public LeanButton replayButton;
+    [Header("Mission Success")]
+    public GameObject successPanel;
+    public LeanButton restartButton;
+    public LeanButton nextButton;
+    [Header("Mission Fail")]
 
+    public GameObject failPanel;
     //public GameObject cautionPanel;
 
-    //public Action ChangeInstrument;
-
     public static int instNumber = 0;
-    public static bool isPlaying = false;
+    public static bool isSetting = false;
+    public static bool isPlaying = true;
     private void Start()
     {
         //startButton.OnClick.AddListener(() => cautionPanel.SetActive(false));
         //quitButton.OnClick.AddListener(() => Application.Quit());
         changeButton.OnClick.AddListener(() =>
         {
-            if (!isPlaying) return;
+            if (!isSetting) return;
             //악기가 배치중이면 변경할 수 없음
-            instNumber++;
-            instNumber = (int)Mathf.Repeat(instNumber, 3);
-
-            switch (instNumber)
-            {
-                case 0:
-                    instrumentName.text = "Piano";
-                    break;
-                case 1:
-                    instrumentName.text = "Drum";
-                    break;
-                case 2:
-                    instrumentName.text = "Bells";
-                    break;
-            }
+            ChangeInstrument();
         });
         setButton.OnClick.AddListener(() =>
         {
-            isPlaying = !isPlaying;
-            if (isPlaying)
+            isSetting = !isSetting;
+            if (isSetting)
             {
                 setText.text = "배치";
             }
@@ -54,5 +49,39 @@ public class UIManager : MonoBehaviour
                 setText.text = "재배치";
             }
         });
+        replayButton.OnClick.AddListener(() => { });
+        restartButton.OnClick.AddListener(() =>
+        {
+            successPanel.SetActive(false);
+            isPlaying = true;
+        });
+        nextButton.OnClick.AddListener(() =>
+        {
+            successPanel.SetActive(false);
+            ChangeInstrument();
+            isPlaying = true;
+        });
+
+        //이벤트 핸들러 설정
+        GameManager.instance.successMission += () =>
+        {
+            successPanel.SetActive(true);
+            isPlaying = false;
+        };
+        GameManager.instance.failMission += () => StartCoroutine(OnFailPanel());
+    }
+
+    private IEnumerator OnFailPanel()
+    {
+        failPanel.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        failPanel.SetActive(false);
+    }
+    private void ChangeInstrument()
+    {
+        instNumber++;
+        instNumber = (int)Mathf.Repeat(instNumber, planeManager.instruments.Length);
+
+        instrumentName.text = planeManager.instruments[instNumber].name;
     }
 }

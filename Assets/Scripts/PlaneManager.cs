@@ -8,8 +8,8 @@ public class PlaneManager : MonoBehaviour
 {
     public GameObject indicator;
     //악기 오브젝트 3개를 관리할 배열로 변경
-    public GameObject[] instruments;//piano, drum, bell
-    private GameObject[] instrumentList = new GameObject[3];
+    public GameObject[] instruments;//drum, piano, bell
+    private GameObject[] instrumentList = new GameObject[3];//악기의 수
     ARRaycastManager raycastManager;
 
     private void Awake()
@@ -28,14 +28,13 @@ public class PlaneManager : MonoBehaviour
     private void Update()
     {
         //악기배치중일 경우 인식중지
-        if (!UIManager.isPlaying)
+        if (!UIManager.isSetting)
         {
-            indicator.SetActive(true);
+            indicator.SetActive(false);
             return;
         }
         else
         {
-            indicator.SetActive(false);
             DetectGround();
 
             if (indicator.activeInHierarchy && Input.touchCount > 0)
@@ -67,10 +66,6 @@ public class PlaneManager : MonoBehaviour
             indicator.SetActive(true);
             indicator.transform.position = hitInfos[0].pose.position;
             indicator.transform.rotation = hitInfos[0].pose.rotation;
-        }
-        else
-        {
-            indicator.SetActive(false);
         }
     }
     private void Rotate(Touch touch)

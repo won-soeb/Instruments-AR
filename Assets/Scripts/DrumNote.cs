@@ -23,6 +23,7 @@ public class DrumNote : Instrument
         {
             //if (audio.isPlaying) return;
             audio.Play();
+            Instantiate(effectNote, transform.position, UnityEngine.Quaternion.Euler(0, 180, 0));
         }
         else
         {

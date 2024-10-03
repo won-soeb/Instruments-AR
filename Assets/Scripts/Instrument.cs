@@ -10,6 +10,8 @@ public abstract class Instrument : MonoBehaviour
     public Material[] materials;
     [Header("º§")]
     public Animator anim;
+    [Header("Effect")]
+    public GameObject effectNote;
 
     protected void Awake()
     {

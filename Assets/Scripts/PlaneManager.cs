@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -11,6 +12,7 @@ public class PlaneManager : MonoBehaviour
     public GameObject[] instruments;//drum, piano, bell
     private GameObject[] instrumentList = new GameObject[3];//악기의 수
     ARRaycastManager raycastManager;
+    private Vector3 currenPosition;
 
     private void Awake()
     {
@@ -24,6 +26,7 @@ public class PlaneManager : MonoBehaviour
             instrumentList[i] = Instantiate(instruments[i]);
             instrumentList[i].SetActive(false);
         }
+        //GameManager.instance.successMission += () => SwitchInstrument(UIManager.instNumber);
     }
     private void Update()
     {
@@ -31,6 +34,7 @@ public class PlaneManager : MonoBehaviour
         if (!UIManager.isSetting)
         {
             indicator.SetActive(false);
+            currenPosition = indicator.transform.position;//악기 위치를 저장
             return;
         }
         else
@@ -51,6 +55,7 @@ public class PlaneManager : MonoBehaviour
                     instrumentList[UIManager.instNumber].SetActive(true);
                     instrumentList[UIManager.instNumber].transform.
                         SetPositionAndRotation(indicator.transform.position, indicator.transform.rotation);
+                    //SwitchInstrument(UIManager.instNumber);
                 }
             }
         }
@@ -87,5 +92,15 @@ public class PlaneManager : MonoBehaviour
         EventSystem.current.RaycastAll(pointerEventData, results);
 
         return results.Count > 0; // UI 요소가 터치된 경우 true 반환
+    }
+    private void SwitchInstrument(int instNum)
+    {
+        for (int i = 0; i < instruments.Length; i++)
+        {
+            instrumentList[i].SetActive(false);
+        }
+        instrumentList[instNum].SetActive(true);
+        instrumentList[UIManager.instNumber].transform.
+        SetPositionAndRotation(currenPosition, indicator.transform.rotation);
     }
 }

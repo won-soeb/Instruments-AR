@@ -23,6 +23,7 @@ public class PianoNote : Instrument
         {
             //if (audio.isPlaying) return;
             audio.Play();
+            Instantiate(effectNote, transform.position, transform.rotation);
         }
         else
         {

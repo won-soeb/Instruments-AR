@@ -10,7 +10,7 @@ public class UIManager : MonoBehaviour
 
     [Header("<color=yellow>경고창</color>")]//App의 첫 시작 - 경고창
     public GameObject cautionPanel;
-    public LeanButton correctButton;
+    //public LeanButton correctButton;
     public LeanButton cancelButton;
 
     [Header("<color=yellow>메뉴</color>")]
@@ -30,7 +30,6 @@ public class UIManager : MonoBehaviour
     public LeanButton setButton;
     public Text setText;
     public LeanButton replayButton;
-    public LeanButton tomenuButton;
 
     [Header("<color=yellow>미션성공</color>")]
     public GameObject successPanel;
@@ -40,6 +39,8 @@ public class UIManager : MonoBehaviour
     [Header("<color=yellow>미션실패</color>")]
     public GameObject failPanel;
 
+    [Header("<color=yellow>메뉴로가기</color>")]
+    public LeanButton[] menuButtons;
     [Header("<color=yellow>뒤로가기</color>")]
     public LeanButton[] backButtons;
     [Header("<color=yellow>설정</color>")]
@@ -63,24 +64,26 @@ public class UIManager : MonoBehaviour
             {"Success",successPanel},{"Fail",failPanel},{"Option",optionPanel}
         };
 
-        // Button 이벤트 리스너 설정
-        correctButton.OnClick.AddListener(() => SwitchPanel("Menu"));
-        tomenuButton.OnClick.AddListener(() => SwitchPanel("Menu"));
-        cancelButton.OnClick.AddListener(() => GameExit());
+        // Button 이벤트 리스너 설정        
+        foreach (var button in menuButtons)
+        {
+            button.OnClick.AddListener(() => SwitchPanel("Menu")); //메뉴 창        
+        }
+        cancelButton.OnClick.AddListener(GameExit);
         startButton.OnClick.AddListener(() => SwitchPanel("Mode"));
-
+        
         foreach (var button in optionButtons)
         {
             button.OnClick.AddListener(() => SwitchPanel("Option")); //설정 창        
         }
-        quitButton.OnClick.AddListener(() => GameExit());
-        playButton.OnClick.AddListener(() => { SwitchPanel("Main"); isMission = false; });
-        missionButton.OnClick.AddListener(() => { SwitchPanel("Main"); isMission = true; });
+        quitButton.OnClick.AddListener(GameExit);
+        playButton.OnClick.AddListener(() => { isMission = false; SwitchPanel("Main"); });
+        missionButton.OnClick.AddListener(StartMission);
         changeButton.OnClick.AddListener(() => { if (isSetting) ChangeInstrument(); });
         setButton.OnClick.AddListener(ToggleSetting);
         replayButton.OnClick.AddListener(() => AudioManager.instance.PlaySoundStart(instNumber));
-        restartButton.OnClick.AddListener(() => ResetMission());
-        nextButton.OnClick.AddListener(() => NextMission());
+        restartButton.OnClick.AddListener(ResetMission);
+        nextButton.OnClick.AddListener(NextMission);
 
         foreach (var button in backButtons)
         {
@@ -93,9 +96,8 @@ public class UIManager : MonoBehaviour
                 }
             });
         }
-
         // GameManager 이벤트 연결
-        GameManager.instance.successMission += () => SwitchPanel("Success");
+        GameManager.instance.successMission += () => SuccessMission();
         GameManager.instance.failMission += () => StartCoroutine(OnFailPanel());
     }
 
@@ -104,18 +106,39 @@ public class UIManager : MonoBehaviour
         isSetting = !isSetting;
         setText.text = isSetting ? "배치" : "재배치";
     }
-
+    private void StartMission()
+    {
+        isMission = true;
+        instNumber = 0;
+        instrumentName.text = planeManager.instruments[instNumber].name;
+        SwitchPanel("Main");
+        GameManager.instance.PlayMission();
+    }
     private void ResetMission()
     {
-        uiPanels["Success"].SetActive(false);
+        SwitchPanel("Main");
         isPlaying = true;
     }
-
+    private void SuccessMission()
+    {
+        SwitchPanel("Success");
+        isPlaying = false;
+        //마지막 악기인가 확인
+        if (instNumber == planeManager.instruments.Length - 1)
+        {
+            nextButton.gameObject.SetActive(false);
+        }
+        else
+        {
+            nextButton.gameObject.SetActive(true);
+        }
+    }
     private void NextMission()
     {
-        uiPanels["Success"].SetActive(false);
+        SwitchPanel("Main");
         ChangeInstrument();
         isPlaying = true;
+        GameManager.instance.PlayMission();
     }
 
     // UI 패널 전환을 처리하는 메서드
@@ -131,6 +154,9 @@ public class UIManager : MonoBehaviour
             uiPanels[panelName].SetActive(true); // 선택된 패널만 활성화
             uiStack.Push(panelName);//UI정보를 Stack에 등록
         }
+        //미션모드인지 확인
+        replayButton.gameObject.SetActive(isMission);
+        changeButton.interactable = !isMission;
     }
 
     private IEnumerator OnFailPanel()

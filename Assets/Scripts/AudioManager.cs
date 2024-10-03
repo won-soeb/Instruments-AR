@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
@@ -20,6 +19,9 @@ public class AudioManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        //미션 이벤트
+        GameManager.instance.PlayMission += () => PlaySoundStart(UIManager.instNumber);
+        GameManager.instance.successMission += () => PlaySoundEnd(UIManager.instNumber);
     }
     public void PlaySoundStart(int index)
     {
@@ -27,21 +29,10 @@ public class AudioManager : MonoBehaviour
         if (audioSource.isPlaying) return;
         audioSource.Play();
     }
-    public void PlaySoundEnd(int index)
+    private void PlaySoundEnd(int index)
     {
         audioSource.clip = endClips[index];
         if (audioSource.isPlaying) return;
         audioSource.Play();
-    }
-    //Test
-    [ContextMenu("StartSound")]
-    private void TestPlayStart()
-    {
-        PlaySoundStart(UIManager.instNumber);
-    }
-    [ContextMenu("EndSound")]
-    private void TestPlayEnd()
-    {
-        PlaySoundEnd(UIManager.instNumber);
     }
 }

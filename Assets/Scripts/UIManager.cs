@@ -49,7 +49,7 @@ public class UIManager : MonoBehaviour
 
     public static int instNumber = 0;
     public static bool isSetting = false;
-    public static bool isPlaying = true;
+    public static bool isPlaying = false;
     public static bool isMission = false;
 
     private Dictionary<string, GameObject> uiPanels;
@@ -60,24 +60,32 @@ public class UIManager : MonoBehaviour
         // UI 패널들을 Dictionary로 관리
         uiPanels = new Dictionary<string, GameObject>
         {
-            {"Caution",cautionPanel },{"Menu",menuPanel },{"Mode",modePanel},{"Main",mainPanel},
+            {"Caution",cautionPanel},{"Menu",menuPanel},{"Mode",modePanel},{"Main",mainPanel},
             {"Success",successPanel},{"Fail",failPanel},{"Option",optionPanel}
         };
 
         // Button 이벤트 리스너 설정        
         foreach (var button in menuButtons)
         {
-            button.OnClick.AddListener(() => SwitchPanel("Menu")); //메뉴 창        
+            button.OnClick.AddListener(() =>
+            {
+                SwitchPanel("Menu"); //메뉴 창
+                planeManager.RemoveInstruments();//악기 리셋
+            });
         }
         cancelButton.OnClick.AddListener(GameExit);
         startButton.OnClick.AddListener(() => SwitchPanel("Mode"));
-        
+
         foreach (var button in optionButtons)
         {
             button.OnClick.AddListener(() => SwitchPanel("Option")); //설정 창        
         }
         quitButton.OnClick.AddListener(GameExit);
-        playButton.OnClick.AddListener(() => { isMission = false; SwitchPanel("Main"); });
+        playButton.OnClick.AddListener(() =>
+        {
+            isMission = false; isPlaying = true;
+            SwitchPanel("Main");
+        });
         missionButton.OnClick.AddListener(StartMission);
         changeButton.OnClick.AddListener(() => { if (isSetting) ChangeInstrument(); });
         setButton.OnClick.AddListener(ToggleSetting);
@@ -97,8 +105,8 @@ public class UIManager : MonoBehaviour
             });
         }
         // GameManager 이벤트 연결
-        GameManager.instance.successMission += () => SuccessMission();
-        GameManager.instance.failMission += () => StartCoroutine(OnFailPanel());
+        GameManager.instance.SuccessMission += SuccessMission;
+        GameManager.instance.FailMission += () => StartCoroutine(OnFailPanel());
     }
 
     private void ToggleSetting()
@@ -109,6 +117,7 @@ public class UIManager : MonoBehaviour
     private void StartMission()
     {
         isMission = true;
+        isPlaying = true;
         instNumber = 0;
         instrumentName.text = planeManager.instruments[instNumber].name;
         SwitchPanel("Main");

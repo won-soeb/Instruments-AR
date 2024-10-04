@@ -4,7 +4,7 @@ public class NoteChecker : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Note"))
+        if (other.CompareTag("Note") && UIManager.isPlaying)
         {
             other.GetComponent<Instrument>().CheckNote(true);
         }

@@ -21,7 +21,7 @@ public class AudioManager : MonoBehaviour
         }
         //미션 이벤트
         GameManager.instance.PlayMission += () => PlaySoundStart(UIManager.instNumber);
-        GameManager.instance.successMission += () => PlaySoundEnd(UIManager.instNumber);
+        GameManager.instance.SuccessMission += () => PlaySoundEnd(UIManager.instNumber);
     }
     public void PlaySoundStart(int index)
     {
